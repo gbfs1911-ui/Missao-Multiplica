@@ -1,0 +1,8 @@
+MISSÃO MULTIPLICA — projeto Android offline
+Jogo de habilidade matemática com entregas espaciais, sem formato de quiz.
+O jogador interpreta encomendas de grupos iguais e escolhe a carga correta.
+O jogo é executado offline e não coleta dados.
+
+COMO GERAR O APK
+O repositório inclui um workflow do GitHub Actions que compila o APK de depuração automaticamente. Abra a aba Actions, selecione “Build Android APK” e, após o sucesso, baixe o artefato “missao-multiplica-debug-apk”.
+O arquivo dentro do artefato é app-debug.apk.
