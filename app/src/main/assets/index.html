@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#10172a"><title>Missão Multiplica</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10172a;color:#fff;font-family:system-ui,-apple-system,sans-serif;touch-action:manipulation}.wrap{max-width:700px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;align-items:center;gap:8px}.pill{background:#222e49;border-radius:14px;padding:8px 12px;font-weight:800}.title{font-size:clamp(25px,7vw,38px);font-weight:950;letter-spacing:-1px;margin:12px 0 2px}.sub{color:#aab8d6;margin-bottom:14px}.scene{position:relative;background:linear-gradient(#253f6b,#182641 70%,#243d38 70%);border:2px solid #49638c;border-radius:22px;overflow:hidden;min-height:300px;padding:16px}.scene:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 15%,#fff8 0 2px,transparent 3px);background-size:53px 47px;opacity:.5;pointer-events:none}.mission{position:relative;background:#10172acc;border:1px solid #50688f;border-radius:16px;padding:12px;margin-bottom:16px}.mission small{color:#b5c7e9;font-weight:700}.mission h2{margin:4px 0;font-size:23px}.market{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative}.crate{border:2px solid #b9824e;background:linear-gradient(135deg,#dba05f,#9d5d36);border-radius:15px;min-height:88px;color:#2d1b12;font-weight:950;font-size:24px;box-shadow:0 5px 0 #653c2b;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.crate span{font-size:12px;font-weight:800}.crate:active{transform:translateY(3px);box-shadow:0 2px 0 #653c2b}.crate.good{background:linear-gradient(135deg,#8be4ad,#35a96b);border-color:#baffd0}.crate.bad{animation:shake .25s}.helper{position:relative;margin-top:16px;display:flex;gap:12px;align-items:center;background:#ffffff12;border-radius:14px;padding:10px}.buddy{font-size:38px}.helper p{margin:0;color:#d9e5ff;font-size:14px}.bar{height:9px;background:#2c3855;border-radius:99px;overflow:hidden;margin-top:12px}.bar div{height:100%;width:0;background:#72e3a1;transition:width .25s}.controls{display:flex;gap:10px;margin-top:14px}.btn{border:0;border-radius:14px;padding:13px 14px;font-size:15px;font-weight:900;cursor:pointer}.primary{background:#ffe07a;color:#35280a;flex:1}.secondary{background:#283652;color:#fff}.toast{min-height:24px;text-align:center;margin:12px 0 0;font-weight:800;color:#9af0b7}.overlay{position:absolute;inset:0;background:#0c1324ee;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}.overlay h2{font-size:30px;margin:8px}.overlay p{color:#d1def7;line-height:1.5}.hidden{display:none}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}@media(min-width:520px){.scene{min-height:390px;padding:22px}.crate{min-height:105px;font-size:28px}}
+</style></head><body><main class="wrap">
+<div class="top"><div class="pill">🚀 MISSÃO MULTIPLICA</div><div class="pill">🪙 <span id="coins">0</span></div><div class="pill">⭐ <span id="level">1</span></div></div>
+<div class="title">Abasteça a nave!</div><div class="sub">Entregue as caixas certas e fuja dos meteoros.</div>
+<section class="scene" id="scene">
+<div class="mission"><small>ENCOMENDA DA VEZ</small><h2 id="mission">3 caixas com 4 cristais</h2><div id="need">A nave precisa de 12 cristais!</div></div>
+<div class="market" id="market"></div>
+<div class="helper"><div class="buddy" id="buddy">👩‍🚀</div><p id="message">Escolha a carga que completa a encomenda. Cada caixa tem um lote de cristais!</p></div>
+<div class="bar"><div id="progress"></div></div><div class="toast" id="toast"></div>
+<div class="overlay" id="overlay"><div style="font-size:62px">🪐</div><h2>Uma galáxia precisa de você!</h2><p>Carregue a nave, ganhe cristais e desbloqueie novos planetas. A matemática está escondida na missão.</p><button class="btn primary" id="start">COMEÇAR MISSÃO</button></div>
+</section>
+<div class="controls"><button class="btn secondary" id="sound">🔊 Som: ligado</button><button class="btn secondary" id="restart">↻ Recomeçar</button></div>
+</main><script>
+const $=id=>document.getElementById(id);
+let coins=0,level=1,streak=0,target=12,groups=3,each=4,locked=true,sound=true,round=0;
+function rand(n){return Math.floor(Math.random()*n)}
+function newRound(){locked=false;round++;groups=2+rand(5);each=2+rand(9);target=groups*each;
+$('mission').textContent=`${groups} caixas com ${each} cristais`;$('need').textContent=`A nave precisa de ${target} cristais!`;
+$('message').textContent='Toque na pilha de cristais que atende à encomenda.';$('buddy').textContent=['👩‍🚀','🤖','👨‍🚀','🦊'][rand(4)];$('toast').textContent='';
+let opts=new Set([target]);while(opts.size<6){let v=Math.max(2,target+[-12,-8,-5,-3,3,4,6,9,12][rand(9)]);opts.add(v)}
+let arr=[...opts].sort(()=>Math.random()-.5);let m=$('market');m.innerHTML='';
+arr.forEach(v=>{let b=document.createElement('button');b.className='crate';b.innerHTML=`${v}<span>💎 cristais</span>`;b.onclick=()=>choose(b,v);m.appendChild(b)});
+$('progress').style.width=`${Math.min(100,(round%10)*10)}%`;
+}
+function choose(btn,v){if(locked)return;if(v===target){locked=true;btn.classList.add('good');coins+=target;streak++;if(streak%4===0)level++;$('coins').textContent=coins;$('level').textContent=level;$('toast').textContent=['Entrega perfeita! +'+target+' cristais!','Boa! A nave está abastecida!','Missão cumprida! Próximo planeta!'][rand(3)];$('buddy').textContent='🎉';$('message').textContent=`${groups} grupos de ${each}: carga entregue!`;setTimeout(newRound,950)}else{btn.classList.add('bad');streak=0;$('toast').textContent='Essa carga não fecha a encomenda. Tente outra!';$('message').textContent='Pense nos grupos: cada caixa tem a mesma quantidade.';setTimeout(()=>btn.classList.remove('bad'),300)}}
+function start(){coins=0;level=1;streak=0;round=0;$('coins').textContent=0;$('level').textContent=1;$('overlay').classList.add('hidden');newRound()}
+$('start').onclick=start;$('restart').onclick=()=>{$('overlay').classList.remove('hidden')};$('sound').onclick=()=>{sound=!sound;$('sound').textContent=sound?'🔊 Som: ligado':'🔇 Som: desligado'};
+</script></body></html>
